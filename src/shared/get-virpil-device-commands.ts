@@ -10,7 +10,7 @@ import * as hid from 'node-hid';
 // } HIDUSB_TranzitReport_t;
 
 // ---------------- LIVE SNIFFED EXAMPLE ----------------
-// Application used: http://www.usblyzer.com/
+// Applications used: https://freeusbanalyzer.com,  http://www.usblyzer.com
 // Length: 38
 // Values in hex
 // 02 67 25 00
@@ -23,16 +23,17 @@ import * as hid from 'node-hid';
 
 // const REPORT_LENGTH = 38;
 const REPORT_ID = 0x2;
-const COMMAND_SET_DEFAULT_LEDS = 0x64; // 100
-const COMMAND_SET_ADD_ON_GRIPS_LEDS = 0x65; // 101
-export const COMMAND_SET_ON_BOARD_LEDS = 0x66; // 102 - on-board LEDs
-export const COMMAND_SET_SLAVE_BOARD_LEDS = 0x67; // 103 - slave-device LEDs
+export const COMMAND_SET_DEFAULT_LEDS = 0x64; // 100 - set to default colors
+export const COMMAND_SET_ADD_ON_GRIPS_LEDS = 0x65; // 101 - add-on grips (1-4)
+export const COMMAND_SET_ON_BOARD_LEDS = 0x66; // 102 - on-board LEDs (1-20)
+export const COMMAND_SET_SLAVE_BOARD_LEDS = 0x67; // 103 - slave-device LEDs (1-20)
+export const COMMAND_SET_EXTRA_LEDS = 0x68; // 104 - extra LEDs (alpha prime 1-9)
 const COMMAND_SECONDARY = 0x0; // unnecessary? // 0x25; // Set Slave-board LED 13
 const BLANK = 0x00;
 const END_REPORT = 0xf0; // Not sure?
 
 export const getVirpilDeviceCommands = (deviceVid: number, devicePid: number) => {
-  // Note 2 throttles are found one with usage == 4, and the other usage == 1
+  // Note 2 devices are found one with usage == 4, and the other usage == 1
   const DEVICE_USAGE_POINTER = 1;
   const devices = hid.devices();
   // console.log('devices', devices);
@@ -43,44 +44,51 @@ export const getVirpilDeviceCommands = (deviceVid: number, devicePid: number) =>
   if (!virpilDevices || !virpilDevices.length || !virpilDevices[0].path) {
     throw new Error('Virpil device not found!');
   }
-  // const throttleDevice = new hid.HID(
-  //   DEVICE_VID_THROTTLE_DEC,
-  //   DEVICE_PID_THROTTLE_DEC
-  // );
 
-  const throttleDevice = new hid.HID(virpilDevices[0].path);
-  // var deviceInfo = throttleDevice.getDeviceInfo();
-  // console.log('throttleDevice', throttleDevice);
+  const virpilDevice = new hid.HID(virpilDevices[0].path);
+  // var deviceInfo = virpilDevice.getDeviceInfo();
+  // console.log('virpilDevice', virpilDevice);
   // console.log('deviceInfo', deviceInfo);
 
-  const sendVirpilDeviceCommand = (command: number, ledIndexColorPairs: Array<Array<number>>) => {
+  const sendVirpilDeviceCommand = (command: number, ledNumberColorPairs: Array<Array<number>>) => {
     const buffer = new Uint8Array(32).fill(0); // TODO: make this a normal array
 
-    ledIndexColorPairs.forEach((indexColorPair) => {
-      const [index, color] = indexColorPair;
-      buffer[index] = color;
+    ledNumberColorPairs.forEach((numberColorPair) => {
+      const [ledNumber, color] = numberColorPair;
+      const ledIndex = ledNumber - 1;
+      buffer[ledIndex] = color;
     });
 
-    const featureReport = [REPORT_ID, command, COMMAND_SECONDARY, BLANK, ...buffer, BLANK, END_REPORT];
+    const featureReport = [REPORT_ID, command, COMMAND_SECONDARY, BLANK, BLANK, ...buffer, END_REPORT];
 
     const featureReportBuffer = Buffer.from(featureReport); // TODO: eliminate this
 
-    // console.log('report sent:', arrayToHexString(featureReportBuffer));
     try {
-      var rc = throttleDevice.sendFeatureReport(featureReportBuffer);
-      // console.log('sent size:', featureReport.length, ' actual size:', rc);
+      var rc = virpilDevice.sendFeatureReport(featureReportBuffer);
     } catch (e) {
       console.log(e);
     }
   };
 
-  const setOnboardLeds = (ledIndexColorPairs: Array<Array<number>>) => {
-    sendVirpilDeviceCommand(COMMAND_SET_ON_BOARD_LEDS, ledIndexColorPairs);
+  const setDefaultLeds = () => {
+    sendVirpilDeviceCommand(COMMAND_SET_DEFAULT_LEDS, []);
   };
 
-  const setSlaveBoardLeds = (ledIndexColorPairs: Array<Array<number>>) => {
-    sendVirpilDeviceCommand(COMMAND_SET_SLAVE_BOARD_LEDS, ledIndexColorPairs);
+  const setAddOnGripLeds = (ledNumberColorPairs: Array<Array<number>>) => {
+    sendVirpilDeviceCommand(COMMAND_SET_ADD_ON_GRIPS_LEDS, ledNumberColorPairs);
   };
 
-  return { setOnboardLeds, setSlaveBoardLeds };
+  const setOnboardLeds = (ledNumberColorPairs: Array<Array<number>>) => {
+    sendVirpilDeviceCommand(COMMAND_SET_ON_BOARD_LEDS, ledNumberColorPairs);
+  };
+
+  const setSlaveBoardLeds = (ledNumberColorPairs: Array<Array<number>>) => {
+    sendVirpilDeviceCommand(COMMAND_SET_SLAVE_BOARD_LEDS, ledNumberColorPairs);
+  };
+
+  const setExtraLeds = (ledNumberColorPairs: Array<Array<number>>) => {
+    sendVirpilDeviceCommand(COMMAND_SET_EXTRA_LEDS, ledNumberColorPairs);
+  };
+
+  return { setDefaultLeds, setAddOnGripLeds, setOnboardLeds, setSlaveBoardLeds, setExtraLeds };
 };

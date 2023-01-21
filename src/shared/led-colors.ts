@@ -34,3 +34,13 @@ export const COLOR_MAGENTA_BRIGHT = 0b10110011;
 export const COLOR_CYAN_DIM = 0b10010100;
 export const COLOR_CYAN_MEDIUM = 0b10101000;
 export const COLOR_CYAN_BRIGHT = 0b10111100;
+
+export const COLOR_ORANGE = 0b10001011;
+export const COLOR_SALMON = 0b10000110;
+export const COLOR_RED_ORANGE = 0b10000111;
+export const COLOR_RED_PINK = 0b10010011;
+export const COLOR_PINK = 0b10100011;
+export const COLOR_PURPLE = 0b10100001;
+export const COLOR_BLUE_PURPLE = 0b10110010;
+export const COLOR_LIGHT_BLUE = 0b10111001;
+export const COLOR_LIME_GREEN = 0b10011100;
