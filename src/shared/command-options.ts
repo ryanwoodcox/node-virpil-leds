@@ -23,6 +23,15 @@ import {
   COLOR_CYAN_DIM,
   COLOR_CYAN_MEDIUM,
   COLOR_CYAN_BRIGHT,
+  COLOR_ORANGE,
+  COLOR_SALMON,
+  COLOR_RED_ORANGE,
+  COLOR_RED_PINK,
+  COLOR_PINK,
+  COLOR_PURPLE,
+  COLOR_BLUE_PURPLE,
+  COLOR_LIGHT_BLUE,
+  COLOR_LIME_GREEN,
 } from './led-colors';
 
 const colorMap = {
@@ -55,6 +64,15 @@ const colorMap = {
   ['cyan-medium']: COLOR_CYAN_MEDIUM,
   ['cyan-bright']: COLOR_CYAN_BRIGHT,
   ['cyan']: COLOR_CYAN_BRIGHT,
+  ['orange']: COLOR_ORANGE,
+  ['salmon']: COLOR_SALMON,
+  ['red-orange']: COLOR_RED_ORANGE,
+  ['red-pink']: COLOR_RED_PINK,
+  ['pink']: COLOR_PINK,
+  ['purple']: COLOR_PURPLE,
+  ['blue-purple']: COLOR_BLUE_PURPLE,
+  ['light-blue']: COLOR_LIGHT_BLUE,
+  ['lime-green']: COLOR_LIME_GREEN,
 };
 
 const parseButtonColorPairsFromArgs = (value: string, previousValue: Array<Array<number>> = []) => {
