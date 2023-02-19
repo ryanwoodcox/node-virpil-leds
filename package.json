@@ -1,6 +1,6 @@
 {
   "name": "node-virpil-leds",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A package for communicating with the LEDs on Virpil devices",
   "main": "./dist/index.js",
   "files": [
@@ -12,6 +12,10 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc && node esbuild.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryanwoodcox/node-virpil-leds"
   },
   "author": "Ryan Woodcox",
   "license": "ISC",
